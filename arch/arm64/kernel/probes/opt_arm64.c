@@ -76,7 +76,7 @@ int arch_prepared_optinsn(struct arch_optimized_insn *optinsn)
 }
 
 int arch_within_optimized_kprobe(struct optimized_kprobe *op, unsigned long addr)
-q{
+{
 	return op->kp.addr == (kprobe_opcode_t *)addr;
 }
 
