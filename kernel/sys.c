@@ -1266,6 +1266,12 @@ SYSCALL_DEFINE1(newuname, struct new_utsname __user *, name)
 
 	down_read(&uts_sem);
 	memcpy(&tmp, utsname(), sizeof(tmp));
+
+#ifdef CONFIG_KSU_SUSFS_SPOOF_UNAME
+	if (static_branch_likely(&susfs_is_uname_spoof_buffer_set))
+		susfs_spoof_uname(&tmp);
+#endif
+
 #ifndef CONFIG_FAKE_UNAME_NONE
 	if (current_uid().val == 0) {
 		if (!strncmp(current->comm, "bpfloader", 9) ||
