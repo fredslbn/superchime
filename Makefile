@@ -375,7 +375,7 @@ HOSTCC	= gcc
 HOSTCXX	= g++
 endif
 KBUILD_HOSTCFLAGS   := -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 \
-		-fomit-frame-pointer -std=gnu11 \
+		-fomit-frame-pointer -std=c99 \
 		-Wdeclaration-after-statement \
 		$(HOST_LFS_CFLAGS) \
 		$(HOSTCFLAGS)
