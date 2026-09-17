@@ -21,8 +21,7 @@ struct subprocess_info {
 	struct completion *complete;
 	const char *path;
 	char **argv;
-	char **envp;
-	struct file *file;
+	char **envp;	
 	int wait;
 	int retval;
 	int (*init)(struct subprocess_info *info, struct cred *new);
