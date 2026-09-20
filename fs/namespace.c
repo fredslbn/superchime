@@ -121,7 +121,7 @@ static int mnt_alloc_id(struct mount *mnt)
 static void mnt_free_id(struct mount *mnt)
 {
 #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
-	if (mnt->mnt.mnt_flags & VFSMOUNT_MNT_FLAGS_KSU_UNSHARED_MNT)
+	if (unlikely(mnt->mnt.mnt_flags & VFSMOUNT_MNT_FLAGS_KSU_UNSHARED_MNT))
 		return;
 #endif // #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 
@@ -1108,11 +1108,12 @@ struct vfsmount *vfs_create_mount(struct fs_context *fc)
 			goto bypass_orig_flow;
         }
     }
+#endif // #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+
 	mnt = alloc_vfsmnt(fc->source ?: "none");
+#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 bypass_orig_flow:
-#else
-	mnt = alloc_vfsmnt(fc->source ?: "none");
-#endif
+#endif // #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 
 	if (!mnt)
 		return ERR_PTR(-ENOMEM);
@@ -1236,6 +1237,7 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
 		goto bypass_orig_flow;
 	}
 #endif // #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+
  mnt = alloc_vfsmnt(old->mnt_devname);
 #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 bypass_orig_flow:
@@ -1267,10 +1269,8 @@ bypass_orig_flow:
 	mnt->mnt.mnt_flags &= ~(MNT_WRITE_HOLD|MNT_MARKED|MNT_INTERNAL);
 
 #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
-	if (static_branch_unlikely(&susfs_is_sdcard_android_data_not_decrypted)) {
-		if (susfs_is_current_ksu_domain() && (flag & CL_COPY_MNT_NS))
+	if (unlikely(is_mnt_ksu_unshared))
 		mnt->mnt.mnt_flags |= VFSMOUNT_MNT_FLAGS_KSU_UNSHARED_MNT;
-	}
 #endif // #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 
 	/* Don't allow unprivileged users to change mount flags */
@@ -3282,12 +3282,11 @@ struct mnt_namespace *copy_mnt_ns(unsigned long flags, struct mnt_namespace *ns,
 	/* First pass: copy the tree topology */
 	copy_flags = CL_COPY_UNBINDABLE | CL_EXPIRE;
 
+	if (user_ns != ns->user_ns)
+		copy_flags |= CL_SHARED_TO_SLAVE | CL_UNPRIVILEGED;
 #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
 	copy_flags |= CL_COPY_MNT_NS;
 #endif
-
-	if (user_ns != ns->user_ns)
-		copy_flags |= CL_SHARED_TO_SLAVE | CL_UNPRIVILEGED;
 	new = copy_tree(old, old->mnt.mnt_root, copy_flags);
 	if (IS_ERR(new)) {
 		namespace_unlock();
