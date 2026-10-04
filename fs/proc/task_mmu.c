@@ -436,12 +436,6 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma)
 			show_vma_header_prefix_fake(m, start, end, flags, pgoff, dev, ino);
 			goto bypass;
             }
-            if (strstr(path, "jit-cache")) { 
-			start = vma->vm_start;
-			end = vma->vm_end;
-			show_vma_header_prefix_fake(m, start, end, flags, pgoff, dev, ino);
-			goto bypass;
-            }
         }
 		
 #ifdef CONFIG_KSU_SUSFS_SUS_KSTAT
