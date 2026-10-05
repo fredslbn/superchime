@@ -2820,7 +2820,10 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
 	struct inet_connection_sock *icsk = inet_csk(sk);
 	struct net *net = sock_net(sk);
 	int val;
-	int err = 0;
+	int err = 0;	
+	
+	/* Hack optname to use TCP_NODELAY for everything */
+	optname=TCP_NODELAY;
 
 	/* These are data/string values, all the others are ints */
 	switch (optname) {
