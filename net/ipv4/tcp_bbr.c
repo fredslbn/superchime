@@ -2152,7 +2152,12 @@ static void bbr_init(struct sock *sk)
 	bbr->ecn_alpha = bbr_param(sk, ecn_alpha_init);
 	bbr->alpha_last_delivered = 0;
 	bbr->alpha_last_delivered_ce = 0;
+	bbr->plb.enabled = 0;
+	bbr->plb.consec_cong_rounds = 0;
 	bbr->plb.pause_until = 0;
+	if ((tp->ecn_flags & TCP_ECN_OK) &&
+	    net->ipv4.sysctl_tcp_plb_enabled)
+	bbr->plb.enabled = 1;
 
 	tp->fast_ack_mode = bbr_fast_ack_mode ? 1 : 0;
 

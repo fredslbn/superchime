@@ -1215,11 +1215,10 @@ static struct ctl_table ipv4_net_table[] = {
 		.proc_handler	= proc_dointvec_minmax,
 		.extra1		= &one
 	},
-	#if 0
 	{
 			.procname       = "tcp_plb_enabled",
 			.data           = &init_net.ipv4.sysctl_tcp_plb_enabled,
-			.maxlen         = sizeof(u8),
+			.maxlen         = sizeof(int),
 			.mode           = 0644,
 			.proc_handler   = proc_dou8vec_minmax,
 			.extra1         = SYSCTL_ZERO,
@@ -1237,27 +1236,26 @@ static struct ctl_table ipv4_net_table[] = {
 		{
 			.procname       = "tcp_plb_idle_rehash_rounds",
 			.data           = &init_net.ipv4.sysctl_tcp_plb_idle_rehash_rounds,
-			.maxlen         = sizeof(u8),
+			.maxlen         = sizeof(int),
 			.mode           = 0644,
-			.proc_handler   = proc_dou8vec_minmax,
+			.proc_handler   = proc_dointvec_minmax,
 			.extra2		= &tcp_plb_max_rounds,
 		},
 		{
 			.procname       = "tcp_plb_rehash_rounds",
 			.data           = &init_net.ipv4.sysctl_tcp_plb_rehash_rounds,
-			.maxlen         = sizeof(u8),
+			.maxlen         = sizeof(int),
 			.mode           = 0644,
-			.proc_handler   = proc_dou8vec_minmax,
+			.proc_handler   = proc_dointvec_minmax,
 			.extra2         = &tcp_plb_max_rounds,
 		},
 		{
 			.procname       = "tcp_plb_suspend_rto_sec",
 			.data           = &init_net.ipv4.sysctl_tcp_plb_suspend_rto_sec,
-			.maxlen         = sizeof(u8),
+			.maxlen         = sizeof(int),
 			.mode           = 0644,
-			.proc_handler   = proc_dou8vec_minmax,
-		},
-		#endif
+			.proc_handler   = proc_dointvec_minmax,
+		},	
 	{ }
 };
 
