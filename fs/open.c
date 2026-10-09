@@ -403,8 +403,6 @@ static const struct cred *access_override_creds(void)
 	return old_cred;
 }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeclaration-after-statement"
 long do_faccessat(int dfd, const char __user *filename, int mode, int flags)
 {
 	struct path path;
