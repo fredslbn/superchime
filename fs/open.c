@@ -360,6 +360,7 @@ long do_faccessat(int dfd, const char __user *filename, int mode)
 	struct cred *override_cred;
 	struct path path;
 	struct inode *inode;
+	struct vfsmount *mnt;
 	int res;
 	unsigned int lookup_flags = LOOKUP_FOLLOW;
 
@@ -408,8 +409,8 @@ retry:
 	if (res)
 		goto out;
 
-	inode = d_backing_inode(path.dentry);	
-	struct vfsmount *mnt = path.mnt;
+	inode = d_backing_inode(path.dentry);
+	mnt = path.mnt;
 
 	if ((mode & MAY_EXEC) && S_ISREG(inode->i_mode)) {
 		/*
