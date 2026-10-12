@@ -159,10 +159,6 @@ static inline struct tracepoint *tracepoint_ptr_deref(tracepoint_ptr_t *p)
 #define TRACEPOINTS_ENABLED
 #endif
 
-#ifdef CONFIG_STRIPPED_BPF_TRACE
-#undef TRACEPOINTS_ENABLED
-#endif
-
 #ifdef TRACEPOINTS_ENABLED
 
 /*
