@@ -28,6 +28,8 @@
 #define CREATE_TRACE_POINTS
 #include "bpf_trace.h"
 
+static DEFINE_MUTEX(bpf_event_mutex);
+
 #define bpf_event_rcu_dereference(p)					\
 	rcu_dereference_protected(p, lockdep_is_held(&bpf_event_mutex))
 
@@ -1919,8 +1921,6 @@ const struct bpf_verifier_ops perf_event_verifier_ops = {
 
 const struct bpf_prog_ops perf_event_prog_ops = {
 };
-
-static DEFINE_MUTEX(bpf_event_mutex);
 
 #define BPF_TRACE_MAX_PROGS 64
 
