@@ -1149,7 +1149,6 @@ CONFIG_LLC=y
 # CONFIG_PHONET is not set
 # CONFIG_6LOWPAN is not set
 # CONFIG_IEEE802154 is not set
-CONFIG_NET_SCHED=y
 
 #
 # Queueing/Scheduling
