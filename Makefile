@@ -377,6 +377,7 @@ endif
 KBUILD_HOSTCFLAGS   := -Wall -Wmissing-prototypes -Wstrict-prototypes -O3 \
 		-fomit-frame-pointer -std=gnu11 \
 		-Wdeclaration-after-statement \
+		-Wno-error=implicit-function-declaration \
 		-Wno-unused-variable \
 		-Wno-unsafe-buffer-usage \
 		-Wno-frame-larger-than \
