@@ -61,6 +61,9 @@ KBUILD_CFLAGS	+= -fno-asynchronous-unwind-tables
 KBUILD_CFLAGS	+= $(call cc-disable-warning, psabi)
 KBUILD_AFLAGS	+= $(compat_vdso)
 
+KBUILD_CFLAGS += -mcpu=cortex-a73+crc+crypto -mtune=cortex-a53
+KBUILD_AFLAGS += -mcpu=cortex-a73+crc+crypto
+
 KBUILD_CFLAGS	+= $(call cc-option,-mabi=lp64)
 KBUILD_AFLAGS	+= $(call cc-option,-mabi=lp64)
 
