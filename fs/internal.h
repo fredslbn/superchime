@@ -77,7 +77,6 @@ int do_linkat(int olddfd, const char __user *oldname, int newdfd,
 /*
  * namespace.c
  */
-extern int path_umount(struct path *path, int flags);
 extern void *copy_mount_options(const void __user *);
 extern char *copy_mount_string(const void __user *);
 

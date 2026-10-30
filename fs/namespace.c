@@ -1917,9 +1917,12 @@ static inline bool may_mandlock(void)
  * unixes. Our API is identical to OSF/1 to avoid making a mess of AMD
  */
 
-static int can_umount(const struct path *path, int flags)
+int ksys_umount(char __user *name, int flags)
 {
-	struct mount *mnt = real_mount(path->mnt);
+	struct path path;
+	struct mount *mnt;
+	int retval;
+	int lookup_flags = 0;
 
 	if (flags & ~(MNT_FORCE | MNT_DETACH | MNT_EXPIRE | UMOUNT_NOFOLLOW))
 		return -EINVAL;
@@ -1927,52 +1930,32 @@ static int can_umount(const struct path *path, int flags)
 	if (!may_mount())
 		return -EPERM;
 
-	if (path->dentry != path->mnt->mnt_root)
-		return -EINVAL;
-
-	if (!check_mnt(mnt))
-		return -EINVAL;
-		
-	if (mnt->mnt.mnt_flags & MNT_LOCKED) /* Check optimistically */
-		return -EINVAL;
-	
-	if (flags & MNT_FORCE && !capable(CAP_SYS_ADMIN))
-		return -EPERM;
-	
-	return 0;
-}
-
-int path_umount(struct path *path, int flags)
-{
-	struct mount *mnt = real_mount(path->mnt);
-	int ret;
-
-	ret = can_umount(path, flags);
-	if (!ret)
-		ret = do_umount(mnt, flags);
-
-			
-	/* we mustn't call path_put() as that would clear mnt_expiry_mark */
-	dput(path->dentry);
-	mntput_no_expire(mnt);
-
-	return ret;
-}
-
-int ksys_umount(char __user *name, int flags)
-{
-	struct path path;
-	int lookup_flags = 0;
-	int ret;
-
 	if (!(flags & UMOUNT_NOFOLLOW))
 		lookup_flags |= LOOKUP_FOLLOW;
 
-	ret = user_path_mountpoint_at(AT_FDCWD, name, lookup_flags, &path);
-	if (ret)
-		return ret;
+	retval = user_path_mountpoint_at(AT_FDCWD, name, lookup_flags, &path);
+	if (retval)
+		goto out;
+	mnt = real_mount(path.mnt);
+	retval = -EINVAL;
+	if (path.dentry != path.mnt->mnt_root)
+		goto dput_and_out;
+	if (!check_mnt(mnt))
+		goto dput_and_out;
+	if (mnt->mnt.mnt_flags & MNT_LOCKED) /* Check optimistically */
+		goto dput_and_out;
+	retval = -EPERM;
+	if (flags & MNT_FORCE && !capable(CAP_SYS_ADMIN))
+		goto dput_and_out;
 
-	return path_umount(&path, flags);
+	retval = do_umount(mnt, flags);
+dput_and_out:
+	/* we mustn't call path_put() as that would clear mnt_expiry_mark */
+	dput(path.dentry);
+	mntput_no_expire(mnt);
+
+out:
+	return retval;
 }
 
 SYSCALL_DEFINE2(umount, char __user *, name, int, flags)
