@@ -83,10 +83,6 @@ static struct vfsmount *shm_mnt;
 #include <linux/uaccess.h>
 #include <linux/pgtable.h>
 
-#ifdef CONFIG_KSU_SUSFS
-#include <linux/susfs.h>
-#endif
-
 #include "internal.h"
 
 #ifdef CONFIG_MEMFD_ASHMEM_SHIM
